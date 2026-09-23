@@ -1,0 +1,14 @@
+# Build output
+Source/bin/
+Source/obj/
+Source/deus_translate.so
+Source/*.exp
+Source/*.lib
+Source/*.pdb
+
+# Compiled Pawn
+*.amx
+
+# VS / editor cruft
+*.user
+.vs/

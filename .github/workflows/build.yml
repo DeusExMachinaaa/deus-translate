@@ -1,0 +1,40 @@
+name: build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  windows:
+    name: Windows (.dll, Win32)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+      - name: Build (Release|Win32)
+        run: msbuild Source\deus_translate.vcxproj /p:Configuration=Release /p:Platform=Win32 /nologo /v:minimal
+      - name: Upload deus_translate.dll
+        uses: actions/upload-artifact@v4
+        with:
+          name: deus_translate-windows
+          path: Source/bin/Release/deus_translate.dll
+
+  linux:
+    name: Linux (.so, 32-bit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install 32-bit toolchain
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y g++-multilib
+      - name: Build (make -m32)
+        run: make -C Source
+      - name: Upload deus_translate.so
+        uses: actions/upload-artifact@v4
+        with:
+          name: deus_translate-linux
+          path: Source/deus_translate.so

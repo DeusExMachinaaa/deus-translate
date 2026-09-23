@@ -1,0 +1,7 @@
+{
+    "MSG_HOLA":     "Hello, %s! Welcome to the server.",
+    "MSG_DINERO":   "You have $%d in the bank.",
+    "MSG_BYE":      "Goodbye, see you!",
+    "MSG_LANG_SET": "Language changed to English.",
+    "MSG_LANG_CUR": "Your current language is: %s"
+}

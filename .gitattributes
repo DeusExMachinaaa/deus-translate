@@ -1,0 +1,15 @@
+# Normaliza a LF por defecto (Makefile y workflow DEBEN ser LF para Linux)
+* text=auto eol=lf
+
+# Herramientas de Windows: mejor CRLF
+*.bat    text eol=crlf
+*.sln    text eol=crlf
+*.vcxproj text eol=crlf
+*.def    text eol=crlf
+
+# Locale sensibles al charset (p.ej. Windows-1251): preservar bytes tal cual
+Plugin/scriptfiles/locales/*.json -text
+
+# Binarios
+*.dll binary
+*.so  binary
