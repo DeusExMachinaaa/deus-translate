@@ -3,5 +3,7 @@
     "MSG_DINERO":   "Tenés $%d en el banco.",
     "MSG_BYE":      "¡Chau, nos vemos!",
     "MSG_LANG_SET": "Idioma cambiado a Español.",
-    "MSG_LANG_CUR": "Tu idioma actual es: %s"
+    "MSG_LANG_CUR": "Tu idioma actual es: %s",
+    "MSG_ANNOUNCE": "Anuncio del servidor: %s",
+    "MSG_ORDER":    "%2$s fue vencido por %1$s."
 }

@@ -3,5 +3,7 @@
     "MSG_DINERO":   "You have $%d in the bank.",
     "MSG_BYE":      "Goodbye, see you!",
     "MSG_LANG_SET": "Language changed to English.",
-    "MSG_LANG_CUR": "Your current language is: %s"
+    "MSG_LANG_CUR": "Your current language is: %s",
+    "MSG_ANNOUNCE": "Server announcement: %s",
+    "MSG_ORDER":    "%1$s beat %2$s."
 }

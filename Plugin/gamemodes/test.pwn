@@ -34,7 +34,7 @@ public OnPlayerConnect(playerid)
 
     // Aún sin idioma asignado -> usa el default (EN)
     SendLanguageMessage(playerid, -1, "MSG_HOLA", name);
-    SendClientMessage(playerid, 0xAAAAAAFF, "Comandos: /es /en /ru | /hola /dinero /bye /lang");
+    SendClientMessage(playerid, 0xAAAAAAFF, "Comandos: /es /en /ru | /hola /dinero /bye /lang /anuncio /orden");
     return 1;
 }
 
@@ -66,6 +66,19 @@ public OnPlayerCommandText(playerid, cmdtext[])
         new code[8];
         Lang_GetPlayer(playerid, code, sizeof code);
         SendLanguageMessage(playerid, -1, "MSG_LANG_CUR", code);
+        return 1;
+    }
+    if (!strcmp(cmdtext, "/anuncio", true))
+    {
+        // A todos, cada uno en su idioma
+        SendLanguageMessageToAll(0x88FF88FF, "MSG_ANNOUNCE", "reinicio en 5 min");
+        return 1;
+    }
+    if (!strcmp(cmdtext, "/orden", true))
+    {
+        // Demo de reordenamiento: mismos args, distinto orden segun el idioma
+        // EN: "Lucas beat Pedro."   ES: "Pedro fue vencido por Lucas."
+        SendLanguageMessage(playerid, -1, "MSG_ORDER", "Lucas", "Pedro");
         return 1;
     }
     return 0;

@@ -140,6 +140,19 @@ SendLanguageMessage(playerid, -1, "MSG_HOLA", "Lucas", 2500);
 // -> ¡Hola, Lucas! Tenés $2500.
 ```
 
+### SendLanguageMessageToAll
+```pawn
+native SendLanguageMessageToAll(color, const key[], {Float,_}:...);
+```
+Like `SendLanguageMessage`, but sends to **every connected player**, each one in
+their own language. Useful for server-wide announcements without building the
+message per player.
+
+```pawn
+// Each player gets the announcement resolved in their language:
+SendLanguageMessageToAll(-1, "MSG_ANNOUNCE", "reboot in 5 min");
+```
+
 ## Formatting specifiers
 
 Templates resolved by `SendLanguageMessage` support:
@@ -153,10 +166,30 @@ Templates resolved by `SendLanguageMessage` support:
 | `%c`       | single character               |
 | `%f`       | float (6 decimals by default)  |
 | `%.Nf`     | float with N decimals (`%.2f`) |
+| `%N$...`   | positional argument (1-based)  |
 | `%%`       | literal percent sign           |
 
 Arguments are consumed left to right. Extra arguments are ignored; a specifier
 with no matching argument produces empty output.
+
+### Positional arguments (reordering)
+
+Word order differs between languages, so a fixed left-to-right order can't always
+produce a natural sentence. Use POSIX-style `%N$` to pick which argument a
+specifier consumes (1-based), which lets each translation reorder them freely:
+
+```json
+// en.json: "MSG_ORDER": "%1$s beat %2$s."
+// es.json: "MSG_ORDER": "%2$s fue vencido por %1$s."
+```
+```pawn
+SendLanguageMessage(playerid, -1, "MSG_ORDER", "Lucas", "Pedro");
+// EN -> Lucas beat Pedro.
+// ES -> Pedro fue vencido por Lucas.
+```
+
+Precision still works after the position (`%1$.2f`). Prefer not to mix numbered
+and unnumbered specifiers in the same template.
 
 ## Building from source
 

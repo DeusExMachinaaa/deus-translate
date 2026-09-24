@@ -68,12 +68,13 @@ static void CallSendClientMessage(AMX* amx, int playerid, int color,
 
 // ---------------------------------------------------------------------------
 // Formateo estilo printf leyendo los args variádicos del AMX
-// Soporta: %s %d %i %u %x %c %f %.Nf %%
+// Soporta: %s %d %i %u %x %c %f %.Nf %% y argumentos posicionales %N$ (base 1),
+// p.ej. "%2$s %1$s" para reordenar los argumentos según el idioma.
 // ---------------------------------------------------------------------------
 static std::string FormatText(AMX* amx, const std::string& tpl,
                               const cell* params, int firstArg) {
     int argc = (int)(params[0] / sizeof(cell)); // args válidos: params[1..argc]
-    int arg = firstArg;
+    int arg = firstArg;                          // contador auto (specs sin número)
     std::string out;
     char tmp[64];
     size_t i = 0, n = tpl.size();
@@ -82,6 +83,14 @@ static std::string FormatText(AMX* amx, const std::string& tpl,
         if (c != '%') { out.push_back(c); continue; }
         if (i >= n) { out.push_back('%'); break; }
         if (tpl[i] == '%') { out.push_back('%'); i++; continue; }
+        // Posición explícita estilo POSIX: %N$...  (N base 1 sobre los variádicos)
+        int posArg = -1;
+        {
+            size_t j = i; int v = 0; bool any = false;
+            while (j < n && tpl[j] >= '0' && tpl[j] <= '9') { v = v*10 + (tpl[j]-'0'); j++; any = true; }
+            if (any && v >= 1 && j < n && tpl[j] == '$') { posArg = v; i = j + 1; }
+        }
+        if (i >= n) { out.push_back('%'); break; }
         int prec = -1;
         if (tpl[i] == '.') {
             size_t j = i + 1; int p = 0; bool any = false;
@@ -89,9 +98,13 @@ static std::string FormatText(AMX* amx, const std::string& tpl,
             if (any && j < n && tpl[j] == 'f') { prec = p; i = j; }
         }
         char spec = (i < n) ? tpl[i++] : '\0';
+        int argIndex = (posArg >= 1) ? (firstArg + posArg - 1) : arg;
         cell* cp = nullptr;
-        bool has = (arg <= argc);
-        if (has) amx_GetAddr(amx, params[arg++], &cp);
+        bool has = (argIndex >= firstArg && argIndex <= argc);
+        if (has) {
+            amx_GetAddr(amx, params[argIndex], &cp);
+            if (posArg < 1) ++arg;   // el contador auto solo avanza en specs sin número
+        }
         switch (spec) {
             case 'd': case 'i':
                 if (has && cp) { snprintf(tmp, sizeof(tmp), "%d", (int)*cp); out += tmp; }
@@ -183,13 +196,33 @@ static cell AMX_NATIVE_CALL n_SendLanguageMessage(AMX* amx, cell* params) {
     CallSendClientMessage(amx, playerid, color, msg);
     return 1;
 }
+// native SendLanguageMessageToAll(color, const key[], {Float,_}:...);
+// Envía a cada jugador conectado el mensaje 'key' resuelto en SU idioma.
+static cell AMX_NATIVE_CALL n_SendLanguageMessageToAll(AMX* amx, cell* params) {
+    const int kMaxPlayers = 1000; // SA:MP MAX_PLAYERS
+    int color = (int)params[1];
+    std::string key = GetString(amx, params[2]);
+    AMX_NATIVE fConn = FindNative(amx, "IsPlayerConnected");
+    for (int pid = 0; pid < kMaxPlayers; ++pid) {
+        if (fConn) {
+            cell cp[2]; cp[0] = 1 * sizeof(cell); cp[1] = (cell)pid;
+            if (fConn(amx, cp) == 0) continue; // saltear ids no conectados
+        }
+        std::string tpl;
+        if (!lang::GetText(pid, key, tpl)) tpl = key;
+        std::string msg = FormatText(amx, tpl, params, 3); // args variádicos desde params[3]
+        CallSendClientMessage(amx, pid, color, msg);
+    }
+    return 1;
+}
 static const AMX_NATIVE_INFO g_Natives[] = {
-    { "Lang_Load",           n_Lang_Load },
-    { "Lang_SetDefault",     n_Lang_SetDefault },
-    { "Lang_SetPlayer",      n_Lang_SetPlayer },
-    { "Lang_GetPlayer",      n_Lang_GetPlayer },
-    { "Lang_GetText",        n_Lang_GetText },
-    { "SendLanguageMessage", n_SendLanguageMessage },
+    { "Lang_Load",                n_Lang_Load },
+    { "Lang_SetDefault",          n_Lang_SetDefault },
+    { "Lang_SetPlayer",           n_Lang_SetPlayer },
+    { "Lang_GetPlayer",           n_Lang_GetPlayer },
+    { "Lang_GetText",             n_Lang_GetText },
+    { "SendLanguageMessage",      n_SendLanguageMessage },
+    { "SendLanguageMessageToAll", n_SendLanguageMessageToAll },
     { nullptr, nullptr }
 };
 
@@ -202,7 +235,7 @@ PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports() {
 PLUGIN_EXPORT bool PLUGIN_CALL Load(void** ppData) {
     pAMXFunctions = ppData[PLUGIN_DATA_AMX_EXPORTS];
     logprintf = (logprintf_t)ppData[PLUGIN_DATA_LOGPRINTF];
-    logprintf("  >> Deus Translate v1.0 by DeusExMachina");
+    logprintf("  >> Deus Translate v1.1 by DeusExMachina");
     logprintf("  >> https://github.com/DeusExMachinaaa");
     return true;
 }
