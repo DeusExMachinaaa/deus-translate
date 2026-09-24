@@ -150,11 +150,13 @@ static std::string FormatText(AMX* amx, const std::string& tpl,
 // ---------------------------------------------------------------------------
 // Natives
 // ---------------------------------------------------------------------------
-// native Lang_Load(const code[], const file[]);
+// native Lang_Load(const code[], const file[], const charset[] = "");
 static cell AMX_NATIVE_CALL n_Lang_Load(AMX* amx, cell* params) {
     std::string code = GetString(amx, params[1]);
     std::string file = GetString(amx, params[2]);
-    bool ok = lang::Load(code, file);
+    std::string charset;
+    if (params[0] >= (cell)(3 * sizeof(cell))) charset = GetString(amx, params[3]);
+    bool ok = lang::Load(code, file, charset);
     if (logprintf) {
         if (ok) logprintf("  >> [Deus Translate] idioma '%s' cargado (%s)", code.c_str(), file.c_str());
         else    logprintf("  >> [Deus Translate] ERROR al cargar '%s' (%s)", code.c_str(), file.c_str());
@@ -235,7 +237,7 @@ PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports() {
 PLUGIN_EXPORT bool PLUGIN_CALL Load(void** ppData) {
     pAMXFunctions = ppData[PLUGIN_DATA_AMX_EXPORTS];
     logprintf = (logprintf_t)ppData[PLUGIN_DATA_LOGPRINTF];
-    logprintf("  >> Deus Translate v1.1 by DeusExMachina");
+    logprintf("  >> Deus Translate v1.2 by DeusExMachina");
     logprintf("  >> https://github.com/DeusExMachinaaa");
     return true;
 }

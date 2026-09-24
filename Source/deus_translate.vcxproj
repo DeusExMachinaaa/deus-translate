@@ -72,11 +72,13 @@
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\lang.cpp" />
+    <ClCompile Include="src\encoding.cpp" />
     <ClCompile Include="sdk\amxplugin.cpp" />
     <ClCompile Include="sdk\amxplugin2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\lang.h" />
+    <ClInclude Include="src\encoding.h" />
     <ClInclude Include="sdk\plugincommon.h" />
     <ClInclude Include="sdk\amx\amx.h" />
     <ClInclude Include="sdk\amx\amx2.h" />

@@ -3,13 +3,15 @@
 
 #include <string>
 
-// Store de localización (i18n). Todo texto se maneja como bytes crudos:
-// no se hace conversión de charset (guardá los JSON en el charset del cliente).
+// Store de localización (i18n).
 namespace lang {
 
 // Carga un JSON y lo asocia al código de idioma (p.ej. "ES").
+// Si 'charset' no está vacío (p.ej. "cp1251"), los valores se transcodifican de
+// UTF-8 al code page indicado al cargar; así los JSON se escriben en UTF-8 y se
+// muestran bien con el charset del cliente. Vacío = passthrough (bytes crudos).
 // Devuelve true si el archivo se pudo leer y parsear.
-bool Load(const std::string& code, const std::string& file);
+bool Load(const std::string& code, const std::string& file, const std::string& charset = "");
 
 // Idioma por defecto (fallback global) cuando un jugador no tiene idioma
 // asignado o su idioma no contiene la clave pedida.

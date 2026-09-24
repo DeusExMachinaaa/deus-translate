@@ -75,26 +75,47 @@ One JSON file per language — a flat object of `key -> text`:
   `{"cmd":{"help":"..."}}` becomes the key `cmd.help`.
 - A UTF-8 BOM, if present, is stripped automatically.
 
-### Encoding (important)
+### Encoding
 
 SA:MP does not use UTF-8 on the client; text is sent as raw bytes and rendered
-with the client's charset. **This plugin passes bytes through unchanged — it
-does not convert encodings.** Save each locale file in the charset the client
-expects (for example Windows-1251 for Cyrillic). A UTF-8 file with non-ASCII
-characters will look garbled in-game. `\uXXXX` escapes are only kept when they
-fit in a single byte (<= 0xFF); otherwise they become `?`.
+with the client's charset (for example Windows-1251 for Cyrillic, Windows-1252
+for Western European). There are two ways to feed the plugin correct bytes:
+
+1. **Author in UTF-8, let the plugin convert (recommended).** Pass the target
+   code page as the third argument to `Lang_Load` (e.g. `"cp1251"`, `"cp1252"`,
+   or just `"1251"`). The file is read as UTF-8 and transcoded to that code page
+   at load time, so you can keep every locale file in UTF-8 and edit it in any
+   modern editor. Characters with no representation in the target code page
+   become `?`. Conversion uses OS facilities only (`WideCharToMultiByte` on
+   Windows, `iconv` on Linux) — no extra dependencies.
+
+2. **Pre-encode the file (passthrough).** Omit the charset argument and the
+   bytes are sent through unchanged; save the file in the client's charset
+   yourself.
+
+`\uXXXX` escapes are decoded before conversion; without a charset they are only
+kept when they fit in a single byte (`<= 0xFF`), otherwise they become `?`.
+A UTF-8 BOM, if present, is stripped automatically.
 
 ## Native reference
 
 ### Lang_Load
 ```pawn
-native Lang_Load(const code[], const file[]);
+native Lang_Load(const code[], const file[], const charset[] = "");
 ```
 Loads `file` (JSON) and associates it with language `code` (case-insensitive).
 The path is relative to the **server root** (where `samp-server.exe` /
 `samp03svr` lives), not `scriptfiles`. Returns `1` on success, `0` if the file
 can't be read or parsed. Call it in `OnGameModeInit`. Loading the same code
 again replaces that language's data.
+
+`charset` (optional) is the client code page to transcode into. When given
+(e.g. `"cp1251"`), the file is read as UTF-8 and converted to that code page on
+load (see [Encoding](#encoding)). When omitted, bytes pass through unchanged.
+```pawn
+Lang_Load("EN", "scriptfiles/locales/en.json", "cp1252");
+Lang_Load("RU", "scriptfiles/locales/ru.json", "cp1251"); // Cyrillic authored in UTF-8
+```
 
 ### Lang_SetDefault
 ```pawn

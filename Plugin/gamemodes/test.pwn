@@ -19,10 +19,12 @@ public OnGameModeInit()
     SetGameModeText("Deus Translate i18n test");
     AddPlayerClass(0, 1958.3783, 1343.1572, 15.3746, 269.1425, 0, 0, 0, 0, 0, 0);
 
-    // Rutas relativas a la raíz del server
-    Lang_Load("ES", "scriptfiles/locales/es.json");
-    Lang_Load("EN", "scriptfiles/locales/en.json");
-    Lang_Load("RU", "scriptfiles/locales/ru.json");
+    // Rutas relativas a la raíz del server.
+    // Los JSON se escriben en UTF-8 y el plugin los transcodifica al code page
+    // del cliente: ES/EN -> Windows-1252 (occidental), RU -> Windows-1251 (cirílico).
+    Lang_Load("ES", "scriptfiles/locales/es.json", "cp1252");
+    Lang_Load("EN", "scriptfiles/locales/en.json", "cp1252");
+    Lang_Load("RU", "scriptfiles/locales/ru.json", "cp1251");
     Lang_SetDefault("EN");
     return 1;
 }

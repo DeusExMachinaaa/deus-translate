@@ -19,7 +19,7 @@ BUILDDIR := build
 CXXFLAGS := -m32 -fPIC -O2 -w -std=c++14 -fvisibility=hidden -DLINUX -Isdk
 LDFLAGS  := -m32 -shared -fPIC
 
-SRCS := src/main.cpp src/lang.cpp sdk/amxplugin.cpp sdk/amxplugin2.cpp
+SRCS := src/main.cpp src/lang.cpp src/encoding.cpp sdk/amxplugin.cpp sdk/amxplugin2.cpp
 OBJS := $(patsubst %.cpp,$(BUILDDIR)/%.o,$(SRCS))
 
 all: $(OUTFILE)

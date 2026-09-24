@@ -9,8 +9,15 @@
  *   Lang_Load("ES", "scriptfiles/locales/es.json");
  * La ruta es relativa a la carpeta raíz del server (donde está samp-server.exe
  * / samp03svr), NO a scriptfiles.
+ *
+ * 'charset' (opcional): si se indica un code page del cliente (p.ej. "cp1251"
+ * para cirílico, "cp1252" occidental), el JSON se lee como UTF-8 y se
+ * transcodifica a ese code page al cargar. Así los archivos se escriben/editan
+ * en UTF-8 y se ven bien en el juego. Si se omite (o ""), el texto pasa tal cual
+ * (bytes crudos): guardá el JSON directamente en el charset del cliente.
+ *   Lang_Load("RU", "scriptfiles/locales/ru.json", "cp1251");
  */
-native Lang_Load(const code[], const file[]);
+native Lang_Load(const code[], const file[], const charset[] = "");
 
 // Idioma por defecto (fallback) si el jugador no tiene idioma o le falta la clave.
 native Lang_SetDefault(const code[]);

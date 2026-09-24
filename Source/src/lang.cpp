@@ -1,5 +1,6 @@
 // lang.cpp - store de idiomas + parser JSON mínimo (string->string)
 #include "lang.h"
+#include "encoding.h"
 
 #include <cstdio>
 #include <cctype>
@@ -143,13 +144,21 @@ struct Parser {
 } // namespace (anónimo)
 namespace lang {
 
-bool Load(const std::string& code, const std::string& file) {
+bool Load(const std::string& code, const std::string& file, const std::string& charset) {
     std::string data;
     if (!readFile(file, data)) return false;
     Parser parser(data);
     StringMap map;
     parser.object(map, "");
     if (!parser.ok) return false;
+    if (!charset.empty()) {
+        // Los valores vienen en UTF-8; transcodificar al code page del cliente.
+        // Las claves son ASCII, no hace falta convertirlas.
+        for (StringMap::iterator it = map.begin(); it != map.end(); ++it) {
+            std::string conv;
+            if (enc::Utf8ToCodepage(it->second, charset, conv)) it->second = conv;
+        }
+    }
     g_langs[upper(code)] = map;
     return true;
 }
