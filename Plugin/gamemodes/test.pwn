@@ -19,9 +19,9 @@ public OnGameModeInit()
     SetGameModeText("Deus Translate i18n test");
     AddPlayerClass(0, 1958.3783, 1343.1572, 15.3746, 269.1425, 0, 0, 0, 0, 0, 0);
 
-    // Rutas relativas a la raíz del server.
+    // Rutas relativas a la raÃ­z del server.
     // Los JSON se escriben en UTF-8 y el plugin los transcodifica al code page
-    // del cliente: ES/EN -> Windows-1252 (occidental), RU -> Windows-1251 (cirílico).
+    // del cliente: ES/EN -> Windows-1252 (occidental), RU -> Windows-1251 (cirÃ­lico).
     Lang_Load("ES", "scriptfiles/locales/es.json", "cp1252");
     Lang_Load("EN", "scriptfiles/locales/en.json", "cp1252");
     Lang_Load("RU", "scriptfiles/locales/ru.json", "cp1251");
@@ -34,9 +34,15 @@ public OnPlayerConnect(playerid)
     new name[MAX_PLAYER_NAME];
     GetPlayerName(playerid, name, sizeof name);
 
-    // Aún sin idioma asignado -> usa el default (EN)
+    // AÃºn sin idioma asignado -> usa el default (EN)
     SendLanguageMessage(playerid, -1, "MSG_HOLA", name);
     SendClientMessage(playerid, 0xAAAAAAFF, "Comandos: /es /en /ru | /hola /dinero /bye /lang /anuncio /orden");
+    return 1;
+}
+
+public OnPlayerDisconnect(playerid, reason)
+{
+    Lang_ResetPlayer(playerid);
     return 1;
 }
 
