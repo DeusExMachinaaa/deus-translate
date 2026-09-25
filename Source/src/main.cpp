@@ -187,6 +187,11 @@ static cell AMX_NATIVE_CALL n_Lang_GetText(AMX* amx, cell* params) {
     SetString(amx, params[3], out, (size_t)params[4]);
     return found ? 1 : 0;
 }
+// native Lang_ResetPlayer(playerid);
+static cell AMX_NATIVE_CALL n_Lang_ResetPlayer(AMX* amx, cell* params) { // -> PARA QUE NO LE SALGA EL MISMO LENGUAJE A LOS GORDITOS.
+    lang::ResetPlayer((int)params[1]);
+    return 1;
+}
 // native SendLanguageMessage(playerid, color, const key[], {Float,_}:...);
 static cell AMX_NATIVE_CALL n_SendLanguageMessage(AMX* amx, cell* params) {
     int playerid = (int)params[1];
@@ -223,6 +228,7 @@ static const AMX_NATIVE_INFO g_Natives[] = {
     { "Lang_SetPlayer",           n_Lang_SetPlayer },
     { "Lang_GetPlayer",           n_Lang_GetPlayer },
     { "Lang_GetText",             n_Lang_GetText },
+    { "Lang_ResetPlayer",         n_Lang_ResetPlayer },
     { "SendLanguageMessage",      n_SendLanguageMessage },
     { "SendLanguageMessageToAll", n_SendLanguageMessageToAll },
     { nullptr, nullptr }
