@@ -32,6 +32,9 @@ native Lang_GetPlayer(playerid, dest[], size = sizeof dest);
 // default). Devuelve 0 si no la encontró (y copia la propia key en 'dest').
 native Lang_GetText(playerid, const key[], dest[], size = sizeof dest);
 
+// Limpia el idioma asignado a un jugador
+native Lang_ResetPlayer(playerid);
+
 /*
  * Resuelve 'key' segun el idioma del jugador, formatea (%s %d %i %u %x %c %f
  * %.Nf %% y posicionales %N$ para reordenar, p.ej. "%2$s %1$s") con los

@@ -146,6 +146,14 @@ Resolves `key` for the player's language (with fallback to the default) and
 writes the raw text into `dest`, without sending anything. Returns `1` if found;
 if not found it copies `key` itself into `dest` and returns `0`.
 
+### Lang_ResetPlayer
+```pawn
+native Lang_ResetPlayer(playerid);
+```
+Clears the language assigned to playerid. Must be called in
+OnPlayerDisconnect; otherwise the next player who reuses that ID
+inherits the previous language.
+
 ### SendLanguageMessage
 ```pawn
 native SendLanguageMessage(playerid, color, const key[], {Float,_}:...);
